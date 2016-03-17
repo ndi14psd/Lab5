@@ -10,6 +10,7 @@ public class DataSourceFactory {
 	static {
 		sources.put("goals", new FootballGoalsSource());
 		sources.put("temperatures", new TemperatureSource());
+		sources.put("bananas", new BananaPriceSource());
 	}
 	
 	private DataSourceFactory() { }

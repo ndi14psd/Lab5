@@ -2,51 +2,48 @@ package comparison;
 
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
+/**
+ * @author ntn13dcm
+ * @author ofk14den
+ * @version 2016-02-17
+ */
 public enum Resolution {
+
 	YEAR {
-		@Override
-		public String getKey(LocalDate date) {
-			return date.getYear() + "";
+		public String createLabel(LocalDate date) {
+			DateTimeFormatter label = DateTimeFormatter.ofPattern("yyyy");
+			return date.format(label).toString();
 		}
-	}, 
+	},
+	
+	QUARTER {
+		public String createLabel(LocalDate date) {
+			DateTimeFormatter label = DateTimeFormatter.ofPattern("yyyy Q");
+			return date.format(label).toString();
+		}
+	},
+	
 	MONTH {
-		@Override
-		public String getKey(LocalDate date) {
-			return date.getYear() + " " + date.getMonth().name();
+		public String createLabel(LocalDate date) {
+			DateTimeFormatter label = DateTimeFormatter.ofPattern("yyyy MM");
+			return date.format(label).toString();
 		}
-	}, 
+	},
+	
 	WEEK {
-		@Override
-		public String getKey(LocalDate date) {
-			return date.getYear() + " Week: " + calculateWeeks(date.getDayOfYear());
+		public String createLabel(LocalDate date) {
+			DateTimeFormatter label = DateTimeFormatter.ofPattern("YYYY w");
+			return date.format(label).toString();
 		}
-	}, 
+	},
+	
 	DAY {
-		@Override
-		public String getKey(LocalDate date) {
+		public String createLabel(LocalDate date) {
 			return date.toString();
-		}	
+		}
 	};
 
-	public abstract String getKey(LocalDate date);
-
-	protected int calculateWeeks(int dayOfYear) {
-		int dayToCompare = 0;
-		int weekNumber = 1;
-		for (int i = 1; i < 53; i++) {
-			dayToCompare += 7;
-			if(dayOfYear <= dayToCompare){ 
-				weekNumber = i;
-				break;	
-			}
-			
-		}
-		return weekNumber;
-	}
-	
-	public boolean areSame(LocalDate firstDate, LocalDate secondDate) {
-		return getKey(firstDate).equals(getKey(secondDate));
-	}
-
+	public abstract String createLabel(LocalDate date);
 }

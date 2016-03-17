@@ -1,85 +1,127 @@
 package comparison;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
+/**
+ * @author ntn13dcm
+ * @author ofk14den
+ * @version 2016-02-17
+ *
+ */
 public class DataCollectionBuilder {
 
 	private DataSource xData;
 	private DataSource yData;
 	private Resolution resolution;
-	private Map<String, List<MatchedDataPair>> resultData;
-	private Map<String, MatchedDataPair> finalResult;
-	private String title;
 
+	private Map<String, MatchedDataPair> finalResult;
+
+	/**
+	 * DataCollectionBuilder is the constructor of the DataCollectionBuilder
+	 * class.
+	 * 
+	 * @param xData
+	 *            DataSource
+	 * @param yData
+	 *            DataSource
+	 * @param resolution
+	 *            Resolution
+	 */
 	public DataCollectionBuilder(DataSource xData, DataSource yData, Resolution resolution) {
 		this.xData = xData;
 		this.yData = yData;
 		this.resolution = resolution;
-		finalResult = new HashMap<>();
-		resultData = new HashMap<>();
+
 	}
 
-	public DataCollectionBuilder(DataSource xData, DataSource yData, Resolution resolution, String title) {
-		this(xData, yData, resolution);
-		this.title = title;
-	}
-
+	/**
+	 * getTitle returns the names of the datasource 1 and 2 in a combined
+	 * sentence.
+	 * 
+	 * @return String
+	 */
 	public String getTitle() {
-		return (title != null) ? title : xData.getName() + " / " + yData.getName();
+		return xData.getName() + "/" + yData.getName();
 	}
-	
+
+	/**
+	 * creates a DataCollection and returns it.
+	 * 
+	 * @return DataCollection
+	 */
 	public DataCollection getResult() {
-		addMatchesToResult();	
-		createFinalFromResult();
-		return new DataCollection(getTitle(), xData.getUnit(), yData.getUnit(), finalResult);
+		compileData();
+		DataCollection collection = new DataCollection(getTitle(), xData.getUnit(), yData.getUnit(), finalResult);
+
+		return collection;
 	}
 
-	private void addMatchesToResult() {
-		xData.getData().forEach( (xKey, xData) -> {
-			yData.getData().forEach( (yKey, yData) -> {
-				if(resolution.areSame(xKey, yKey)) {
-					addToResultData(resolution.getKey(xKey), new MatchedDataPair(xData, yData));
+	private Map<String, MatchedDataPair> compileData() {
+		MatchedDataPair matchDataPair;
+
+		finalResult = new HashMap<String, MatchedDataPair>();
+		String keyName = "";
+		String xPreviusKey = "";
+		int divValueX = 1, divValueY = 0;
+		Double xEqualValue = 0.0, yEqualValue = 0.0;
+
+		for (LocalDate xCurrentKey : xData.getData().keySet()) {
+
+			if (resolution.createLabel(xCurrentKey).equals(xPreviusKey) == false) {
+
+				xPreviusKey = resolution.createLabel(xCurrentKey);
+
+				if (yEqualValue != 0.0) {
+					xEqualValue = xEqualValue / divValueX;
+					yEqualValue = yEqualValue / divValueY;
+
+					matchDataPair = new MatchedDataPair(xEqualValue, yEqualValue);
+
+					finalResult.put(keyName, matchDataPair);
+
+					xEqualValue = 0.0;
+					yEqualValue = 0.0;
+					divValueX = 1;
+					divValueY = 0;
 				}
-			});
-		});
-	}
+				for (LocalDate comaprekey : yData.getData().keySet()) {
 
-	private void addToResultData(String key, MatchedDataPair match) {
-		if(resultData.containsKey(key)) {
-			List<MatchedDataPair> existing = resultData.get(key);
-			existing.add(match);
-		} else {
-			List<MatchedDataPair> matches = new ArrayList<>();
-			matches.add(match);
-			resultData.put(key, matches);
-		}
-	}
+					if (resolution.createLabel(xCurrentKey).equals(resolution.createLabel(comaprekey))) {
+						divValueY++;
+						yEqualValue = yEqualValue + yData.getData().get(comaprekey);
+					}
+				}
+				if (yEqualValue != 0.0)
+					xEqualValue = xData.getData().get(xCurrentKey);
 
-	private void createFinalFromResult() {
-		resultData.forEach((key, list) -> {
-			
-			Double sumX = 0.0;
-			Double sumY = 0.0;
-			
-			for (int i = 0; i < list.size(); i++) {
-				sumX += list.get(i).getXValue();
-				sumY += list.get(i).getYValue();
+				keyName = resolution.createLabel(xCurrentKey);
+
+			} else {
+				xEqualValue = xEqualValue + xData.getData().get(xCurrentKey);
+				divValueX++;
 			}
-			
-			Double averageX = sumX / list.size();
-			Double averageY = sumY / list.size();
-			finalResult.put(key, new MatchedDataPair(roundTwoDecimals(averageX), roundTwoDecimals(averageY)));
-			
-		});
-	}
-	private double roundTwoDecimals(double d){
-		return ((double) Math.round(d * 100) / 100);
-	}
+		}
 
+		if (yEqualValue != 0.0) {
+			xEqualValue = xEqualValue / divValueX;
+			yEqualValue = yEqualValue / divValueY;
 
+			matchDataPair = new MatchedDataPair(xEqualValue, yEqualValue);
+
+			finalResult.put(keyName, matchDataPair);
+
+			xEqualValue = 0.0;
+			yEqualValue = 0.0;
+			divValueX = 1;
+			divValueY = 0;
+		}
+
+		return finalResult;
+	}
 }
