@@ -2,6 +2,8 @@ package comparison;
 
 import java.util.Map.Entry;
 
+import servlet.JsonFormatter;
+
 
 public class DataSourceComparison {
 
@@ -12,11 +14,14 @@ public class DataSourceComparison {
 	public DataSourceComparison(String source1, String source2) {
 		sourceOne = DataSourceFactory.get(source1);
 		sourceTwo = DataSourceFactory.get(source2);
-		result = new DataCollectionBuilder(sourceOne, sourceTwo, Resolution.DAY).getResult();
+		result = new DataCollectionBuilder(sourceOne, sourceTwo, Resolution.MONTH).getResult();
 		System.out.println("Den gjorde jämförelsen.");
 	}
 
 	public String getComparedData() {
+		if(result.getData().isEmpty()) 
+			return "No matches between data sources!";
+		
 		String s = "{ \"matchningar\":[";
 		for (Entry<String, MatchedDataPair> entry : result.getData().entrySet()) {
 			s += "{\"date\":    \"" + entry.getKey() + "\",\"" + sourceOne.getName() + "(" + sourceOne.getUnit() + ")\":\"" + entry.getValue().getXValue()
@@ -26,10 +31,9 @@ public class DataSourceComparison {
 	}
 	
 	public static void main(String[] args) {
-		String source1 = "temperatures";
-		String source2 = "goals";
-		String comp = new DataSourceComparison(source1, source2).getComparedData();
-		System.out.println(comp);
+		String bananas = "bananas";
+		String goals = "goals";
+		String comp = new DataSourceComparison(bananas, goals).getComparedData();
+		System.out.println(new JsonFormatter().format(comp));
 	}
-
 }
