@@ -9,13 +9,13 @@ public class DataSourceFactoryTest {
 	public void testGetCorrectDataSources() {
 		DataSource goals = new FootballGoalsSource();
 		DataSource temperatures = new TemperatureSource();
-		assertEquals(goals.getClass(), DataSourceFactory.get("goals").getClass());
-		assertEquals(temperatures.getClass(), DataSourceFactory.get("temperatures").getClass());
+		assertEquals(goals.getClass(), DataSourceFactory.create("goals").getClass());
+		assertEquals(temperatures.getClass(), DataSourceFactory.create("temperatures").getClass());
 	}
 	
 	@Test
 	public void testWrongValues() throws Exception {
-		assertEquals(null, DataSourceFactory.get("invalid parameter!"));
+		assertEquals(null, DataSourceFactory.create("invalid parameter!"));
 	}
 
 }

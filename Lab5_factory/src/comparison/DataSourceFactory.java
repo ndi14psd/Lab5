@@ -5,18 +5,22 @@ import java.util.Map;
 
 public class DataSourceFactory {
 	
-	private static Map<String, DataSource> sources = new HashMap<>();
+	private final static Map<String, Class<? extends DataSource>> sources = new HashMap<>();
 	
 	static {
-		sources.put("goals", new FootballGoalsSource());
-		sources.put("temperatures", new TemperatureSource());
-		sources.put("bananas", new BananaPriceSource());
+		sources.put("goals", FootballGoalsSource.class);
+		sources.put("temperatures", TemperatureSource.class);
+		sources.put("bananas", BananaPriceSource.class);
 	}
 	
 	private DataSourceFactory() { }
 	
-	public static DataSource get(String source ) {
-		return sources.get(source);
+	public static DataSource create(String source) {
+		try {
+			return sources.get(source).newInstance();
+		} catch (InstantiationException | IllegalAccessException | NullPointerException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

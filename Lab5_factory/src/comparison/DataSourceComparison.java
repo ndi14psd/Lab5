@@ -12,8 +12,8 @@ public class DataSourceComparison {
 	private DataSource sourceTwo;
 
 	public DataSourceComparison(String source1, String source2) {
-		sourceOne = DataSourceFactory.get(source1);
-		sourceTwo = DataSourceFactory.get(source2);
+		sourceOne = DataSourceFactory.create(source1);
+		sourceTwo = DataSourceFactory.create(source2);
 		result = new DataCollectionBuilder(sourceOne, sourceTwo, Resolution.MONTH).getResult();
 		System.out.println("Den gjorde jämförelsen.");
 	}
