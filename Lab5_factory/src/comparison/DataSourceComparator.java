@@ -5,16 +5,16 @@ import java.util.Map.Entry;
 import servlet.JsonFormatter;
 
 
-public class DataSourceComparison {
+public class DataSourceComparator {
 
 	private DataCollection result;
 	private DataSource sourceOne;
 	private DataSource sourceTwo;
 
-	public DataSourceComparison(String source1, String source2) {
+	public DataSourceComparator(String source1, String source2) {
 		sourceOne = DataSourceFactory.create(source1);
 		sourceTwo = DataSourceFactory.create(source2);
-		result = new DataCollectionBuilder(sourceOne, sourceTwo, Resolution.MONTH).getResult();
+		result = new DataCollectionBuilder(sourceOne, sourceTwo, Resolution.DAY).getResult();
 		System.out.println("Den gjorde jämförelsen.");
 	}
 
@@ -28,12 +28,5 @@ public class DataSourceComparison {
 					+ "\",\"" + sourceTwo.getName() + "(" + sourceTwo.getUnit() + ")\":\"" + entry.getValue().getYValue() + "\"},";
 		}
 		return s.substring(0, s.lastIndexOf(',')) + " ]}";
-	}
-	
-	public static void main(String[] args) {
-		String bananas = "bananas";
-		String goals = "goals";
-		String comp = new DataSourceComparison(bananas, goals).getComparedData();
-		System.out.println(new JsonFormatter().format(comp));
 	}
 }

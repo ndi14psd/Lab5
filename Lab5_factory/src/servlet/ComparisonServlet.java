@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import comparison.DataSource;
-import comparison.DataSourceComparison;
+import comparison.DataSourceComparator;
 import comparison.DataSourceFactory;
 
 /**
@@ -32,7 +32,7 @@ public class ComparisonServlet extends HttpServlet {
 		Boolean pretty = Boolean.valueOf(request.getParameter("pretty"));
 		String source1 = request.getParameter("source1");
 		String source2 = request.getParameter("source2");
-		String comp = new DataSourceComparison(source1, source2).getComparedData();
+		String comp = new DataSourceComparator(source1, source2).getComparedData();
 		JsonFormatter formatter = new JsonFormatter();
 		response.getWriter().append(pretty? formatter.format(comp) : comp);
 	}
