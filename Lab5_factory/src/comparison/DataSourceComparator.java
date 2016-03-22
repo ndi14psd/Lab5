@@ -11,11 +11,10 @@ public class DataSourceComparator {
 	private DataSource sourceOne;
 	private DataSource sourceTwo;
 
-	public DataSourceComparator(String source1, String source2) {
-		sourceOne = DataSourceFactory.create(source1);
-		sourceTwo = DataSourceFactory.create(source2);
-		result = new DataCollectionBuilder(sourceOne, sourceTwo, Resolution.DAY).getResult();
-		System.out.println("Den gjorde jämförelsen.");
+	public DataSourceComparator(DataSource sourceOne, DataSource sourceTwo) {
+		this.sourceOne = sourceOne;
+		this.sourceTwo = sourceTwo;
+		result = new DataCollectionBuilder(sourceOne, sourceTwo, Resolution.MONTH).getResult();
 	}
 
 	public String getComparedData() {

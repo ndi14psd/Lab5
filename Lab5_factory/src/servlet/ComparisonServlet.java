@@ -30,11 +30,11 @@ public class ComparisonServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Boolean pretty = Boolean.valueOf(request.getParameter("pretty"));
-		String source1 = request.getParameter("source1");
-		String source2 = request.getParameter("source2");
-		String comp = new DataSourceComparator(source1, source2).getComparedData();
+		DataSource source1 = DataSourceFactory.create(request.getParameter("source1"));
+		DataSource source2 = DataSourceFactory.create(request.getParameter("source2"));
+		String comparedData = new DataSourceComparator(source1, source2).getComparedData();
 		JsonFormatter formatter = new JsonFormatter();
-		response.getWriter().append(pretty? formatter.format(comp) : comp);
+		response.getWriter().append(pretty? formatter.format(comparedData) : comparedData);
 	}
 
 	/**

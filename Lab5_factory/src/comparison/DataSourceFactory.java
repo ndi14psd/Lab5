@@ -11,6 +11,7 @@ public class DataSourceFactory {
 		sources.put("goals", FootballGoalsSource.class);
 		sources.put("temperatures", TemperatureSource.class);
 		sources.put("bananas", BananaPriceSource.class);
+		sources.put("coffee", CoffeePriceSource.class);
 	}
 	
 	private DataSourceFactory() { }
